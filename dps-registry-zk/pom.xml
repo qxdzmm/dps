@@ -7,19 +7,17 @@
     <artifactId>dps</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>com.qi</groupId>
   <artifactId>dps-registry-zk</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <name>dps-registry-zk</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

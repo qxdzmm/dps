@@ -6,6 +6,7 @@ import java.util.Properties;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.dps.common.utils.DpsRegistryException;
 import com.dps.common.utils.StringUtils;
 import com.dps.registry.ConsumerConfig;
@@ -13,6 +14,7 @@ import com.dps.registry.ProviderConfig;
 import com.dps.registry.ProviderGroup;
 import com.dps.registry.Registry;
 import com.dps.registry.RegistryConfig;
+import com.dps.registry.ServiceInstance;
 
 public class NacosRegistry implements Registry {
 
@@ -24,7 +26,7 @@ public class NacosRegistry implements Registry {
 	private static final String NAMESPACE = "namespace";
 
 	@Override
-	public void init(RegistryConfig config) {
+	public void init(RegistryConfig config) throws DpsRegistryException {
 		if (namingService != null) {
 			return;
 		}
@@ -51,11 +53,12 @@ public class NacosRegistry implements Registry {
 		}
 		try {
 			// 注册一些基本信息就可以了，不需要一些元数据信息
-			namingService.registerInstance(config.getServiceName(), config.getGroupName(), config.getIp(), config.getPort(), config.getClusertName());
+			namingService.registerInstance(config.getServiceName(), config.getGroupName(), config.getIp(),
+					config.getPort(), config.getClusertName());
 		} catch (NacosException e) {
-			//TODO  注册失败的时候，怎么处理？？？ 
+			// TODO 注册失败的时候，怎么处理？？？
 		}
-		
+
 	}
 
 	@Override
@@ -64,9 +67,10 @@ public class NacosRegistry implements Registry {
 			return;
 		}
 		try {
-			namingService.deregisterInstance(config.getServiceName(), config.getGroupName(), config.getIp(), config.getPort(), config.getClusertName());
+			namingService.deregisterInstance(config.getServiceName(), config.getGroupName(), config.getIp(),
+					config.getPort(), config.getClusertName());
 		} catch (NacosException e) {
-			//TODO  注册失败的时候，怎么处理？？？ 
+			// TODO 注册失败的时候，怎么处理？？？
 		}
 	}
 
@@ -82,14 +86,44 @@ public class NacosRegistry implements Registry {
 
 	@Override
 	public List<ProviderGroup> subscribe(ConsumerConfig config) {
-		namingService.subscribe(serviceName, groupName, clusters, listener);
+		if (namingService == null) {
+			return null;
+		}
+		try {
+			namingService.subscribe(config.getServiceName(), config.getGroupName(), config.getClusters(),
+					new DpsEventListener());
+		} catch (NacosException e) {
+
+		}
 		return null;
 	}
 
 	@Override
 	public void unSubscribe(ConsumerConfig config) {
+		if (namingService == null) {
+			return;
+		}
+		try {
+			namingService.unsubscribe(config.getServiceName(), config.getGroupName(), config.getClusters(),
+					new DpsEventListener());
+		} catch (NacosException e) {
+		}
+	}
 
-		namingService.unsubscribe(serviceName, groupName, clusters, listener);
+	@Override
+	public List<ServiceInstance> selectAllInstance(ConsumerConfig config) {
+		if (namingService == null) {
+			return null;
+		}
+		try {
+			List<Instance> instances = namingService.selectInstances(config.getServiceName(), config.getGroupName(), config.getClusters(), true, true);
+			instances.forEach(instance->{
+				
+			});
+		} catch (NacosException e) {
+			
+		}
+		return null;
 	}
 
 	@Override

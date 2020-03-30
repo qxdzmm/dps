@@ -7,7 +7,7 @@ public interface Registry {
 	/**
 	 * 初始化
 	 */
-	public void init(RegistryConfig config);
+	public void init(RegistryConfig config) throws Exception;
 
 	/**
 	 * 生产者注册
@@ -51,6 +51,13 @@ public interface Registry {
 	 * @param config
 	 */
 	public void unSubscribe(ConsumerConfig config);
+	
+	/**
+	 * 根据客户端信息查找所有符合提交的服务端信息
+	 * @param config
+	 * @return
+	 */
+	public List<ServiceInstance> selectAllInstance(final ConsumerConfig config);
 
 	/**
 	 * 销毁
